@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchDex</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="gb-case theme-clear">
+
+        <!-- Screen Section -->
+        <div class="gb-screen-bezel">
+            <div class="gb-power-led"></div>
+
+            <div class="gb-screen relative">
+                <div class="pixel-grid absolute inset-0 z-50 pointer-events-none"></div>
+
+                <!-- Search Overlay -->
+                <div id="search-container"
+                    class="absolute top-5 left-0 right-0 z-30 bg-black/60 p-2 backdrop-blur-sm transition-transform duration-300 hidden">
+                    <form onsubmit="handleSearch(event)" class="relative flex items-center">
+                        <span class="text-white font-dot mr-2 text-lg">></span>
+                        <input type="text" id="search-input" placeholder="SEARCH..." autocomplete="off"
+                            class="w-full bg-transparent border-none text-white font-dot text-lg focus:outline-none uppercase placeholder-white/50 tracking-wider">
+                    </form>
+                </div>
+
+                <!-- Main View Area -->
+                <div id="main-view" class="w-full h-full pt-6 bg-zinc-900 relative overflow-hidden">
+
+                    <!-- Welcome Screen -->
+                    <div id="welcome-screen"
+                        class="absolute inset-0 bg-[#8bac0f] z-50 flex flex-col items-center justify-center hidden">
+                        <!-- Dynamic Content -->
+                    </div>
+
+                    <!-- Main Menu Screen -->
+                    <div id="menu-screen"
+                        class="absolute inset-0 bg-[#8bac0f] z-50 flex flex-col items-center justify-center">
+                        <div
+                            class="mb-6 text-[#0f380f] font-dot text-4xl font-bold tracking-widest text-center leading-none drop-shadow-sm">
+                            SEARCH<br>DEX</div>
+                        <div class="w-56 border-2 border-[#0f380f] bg-[#9bbc0f] p-1.5 shadow-lg">
+                            <div id="menu-pokedex" class="menu-item active text-lg">POKEDEX</div>
+                            <div id="menu-battle" class="menu-item text-lg">BATTLE</div>
+                            <div id="menu-settings" class="menu-item text-lg">SETTINGS</div>
+                            <div id="menu-help" class="menu-item text-lg">HELP</div>
+                        </div>
+                        <div class="mt-6 text-[#0f380f] font-mono text-xs">VER 2.2</div>
+                    </div>
+
+                    <!-- Settings Screen -->
+                    <div id="settings-screen" class="absolute inset-0 bg-[#8bac0f] z-50 flex flex-col p-4 hidden">
+                        <div class="text-[#0f380f] font-dot text-2xl font-bold mb-4 border-b-2 border-[#0f380f] pb-1">
+                            SETTINGS</div>
+                        <div class="flex-1 space-y-3">
+                            <div id="setting-theme" class="menu-item active flex justify-between items-center p-2">
+                                <span class="text-lg">THEME</span>
+                                <span id="theme-value"
+                                    class="text-sm font-bold bg-[#306230] text-[#9bbc0f] px-2 py-0.5 rounded">CLEAR</span>
+                            </div>
+                            <div id="setting-reset" class="menu-item p-2">
+                                <span class="text-lg text-red-900">RESET DATA</span>
+                            </div>
+                        </div>
+                        <div class="text-center text-[#306230] font-mono text-xs mt-2">PRESS B TO BACK</div>
+
+                        <!-- Confirm Dialog -->
+                        <div id="confirm-dialog"
+                            class="absolute inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+                            <div class="bg-[#f8f8f8] border-2 border-[#0f380f] p-4 w-4/5 shadow-xl">
+                                <div class="text-[#0f380f] font-dot text-center mb-4 text-lg leading-tight">ERASE ALL
+                                    DATA?</div>
+                                <div class="space-y-2">
+                                    <div id="confirm-no"
+                                        class="menu-item active text-center border border-[#0f380f] p-1">NO</div>
+                                    <div id="confirm-yes"
+                                        class="menu-item text-center border border-[#0f380f] p-1 text-red-700">YES</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Battle Screen -->
+                    <div id="battle-screen" class="w-full h-full relative hidden">
+                        <div id="empty-state"
+                            class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                            <div class="text-[#8bac0f] font-dot text-3xl mb-2 tracking-widest opacity-50">NINTENDO</div>
+                            <div class="text-[#306230] font-mono text-xs animate-pulse">PRESS A TO START</div>
+                        </div>
+                        <div id="battle-content" class="absolute inset-0 hidden"></div>
+                    </div>
+
+                    <!-- Pokedex Screen -->
+                    <div id="pokedex-screen" class="absolute inset-0 bg-zinc-900 hidden z-20 flex flex-col">
+                        <div class="flex bg-[#306230] text-[#8bac0f] text-xs font-bold border-b border-[#0f380f]">
+                            <button onclick="switchTab('owned')" id="tab-owned"
+                                class="flex-1 py-1.5 text-center border-r border-[#0f380f] opacity-50 transition-opacity">OWNED</button>
+                            <button onclick="switchTab('national')" id="tab-national"
+                                class="flex-1 py-1.5 text-center opacity-100 transition-opacity">ALL</button>
+                        </div>
+                        <div class="flex flex-1 overflow-hidden">
+                            <div id="dex-left"
+                                class="w-1/2 p-3 border-r border-[#0f380f] flex flex-col items-center justify-center bg-[#8bac0f]">
+                                <!-- Left Panel Content -->
+                            </div>
+                            <div id="dex-right"
+                                class="w-1/2 overflow-y-auto custom-scrollbar bg-[#9bbc0f] p-2 space-y-1">
+                                <!-- List Content -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- On-screen Message / Toast -->
+                <div id="message-box"
+                    class="absolute bottom-0 left-0 right-0 bg-black/90 text-white font-dot text-sm p-3 z-40 hidden border-t-2 border-white/20">
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="gb-controls">
+            <div class="absolute top-0 left-8 text-[10px] font-sans font-bold text-[#888] tracking-widest opacity-80">
+                NINTENDO GAME BOY</div>
+
+            <!-- D-Pad -->
+            <div class="gb-dpad">
+                <div class="dpad-h"></div>
+                <div class="dpad-v"></div>
+                <div class="dpad-center"></div>
+                <div class="dpad-btn dpad-up" onclick="handleInput('UP')"></div>
+                <div class="dpad-btn dpad-down" onclick="handleInput('DOWN')"></div>
+                <div class="dpad-btn dpad-left" onclick="handleInput('LEFT')"></div>
+                <div class="dpad-btn dpad-right" onclick="handleInput('RIGHT')"></div>
+            </div>
+
+            <!-- A/B Buttons -->
+            <div class="gb-action-btns">
+                <div class="gb-btn-round btn-a" onclick="handleInput('A')">A</div>
+                <div class="gb-btn-round btn-b" onclick="handleInput('B')">B</div>
+            </div>
+
+            <!-- Start/Select -->
+            <div class="gb-start-select">
+                <div class="flex flex-col items-center">
+                    <button class="gb-pill-btn" onclick="handleInput('SELECT')"></button>
+                    <span class="text-[8px] font-sans font-bold text-[#888] mt-1 tracking-wider">SELECT</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <button class="gb-pill-btn" onclick="handleInput('START')"></button>
+                    <span class="text-[8px] font-sans font-bold text-[#888] mt-1 tracking-wider">START</span>
+                </div>
+            </div>
+
+            <!-- Speaker Grille -->
+            <div class="absolute bottom-8 right-6 flex gap-2 -rotate-25 opacity-60">
+                <div class="w-1.5 h-10 bg-black/20 rounded-full transform rotate-[25deg]"></div>
+                <div class="w-1.5 h-10 bg-black/20 rounded-full transform rotate-[25deg]"></div>
+                <div class="w-1.5 h-10 bg-black/20 rounded-full transform rotate-[25deg]"></div>
+                <div class="w-1.5 h-10 bg-black/20 rounded-full transform rotate-[25deg]"></div>
+                <div class="w-1.5 h-10 bg-black/20 rounded-full transform rotate-[25deg]"></div>
+                <div class="w-1.5 h-10 bg-black/20 rounded-full transform rotate-[25deg]"></div>
+            </div>
+
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
